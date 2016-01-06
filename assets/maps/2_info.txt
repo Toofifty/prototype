@@ -1,0 +1,2 @@
+!def A: grey_rock(0, 0)
+!def a: grey_rock_top(0, 0)

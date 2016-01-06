@@ -1,0 +1,138 @@
+"iteration"
+
+3 classes:
+    scout
+        fast, med damage
+        med defence
+    tank
+        slow, med damage
+        high defence
+    sniper
+        slow, high damage
+        low defence
+
+game play
+
+    start with no weapon, punch only
+    player has levels, gets xp from killing enemies
+    caches spread in random places around the map
+    caches contain guns and items, all randomly generated
+    higher level == higher powered guns and items
+    first cache always contains a gun ?
+    low chance of getting a gun upgrade
+
+    game continually scales up, enemies scaling to level (not weapon)
+
+    boss room in each level, survive N waves before boss appears
+
+plot
+
+    humans on earth are about to be exterminated by GUARDIAN,
+    a race of mechs that are the 'galactic police', for some
+    unknown reason. scientists in an orbiting ship that hasn't
+    been noticed need to figure out a way to stop GUARDIAN.
+    they have 3 'iter' robots (classes) that they can send to exo-planets
+    to test and upgrade. if the robot fails the test it is reset
+    back to the last sync point, with the items it had at that point
+    (no coins or gun). the entire map is set to how it was at
+    that point too, so the player can attempt a different tactic in
+    the same scenario. once the iter has successfully survived 3 planets,
+    it is ready to attempt to save earth, and kill the GUARDIAN hive mind.
+
+    items are software upgrades, whereas guns are physical hardware and
+    can't be copied. this explains why when getting re synced (respawning)
+    only items are retained. a default gun and 100p are provided, however
+
+guns
+
+    hold 2 guns at once, allows efficient use of healing/low ammo guns
+
+    3 gun pieces
+
+    random textures for each, stitched together at runtime
+
+    grip - magazine - barrel
+
+    grip
+        fire rate - single, 3 burst, full auto
+
+    magazine
+        amount of ammo, dependent on type of gun
+
+    barrel
+        type of gun - rocket launcher, shotgun, assault rifle
+
+    only items and rare gun upgrades change regular gun behaviour.
+    i.e.
+    tracking rounds
+    poison tips
+    incendiary shots
+    morphine darts
+
+    gun upgrades apply to only the current gun held, and can't be removed
+
+currency
+
+    all enemies drop some platinum on death
+    can also be a reward from chests
+    option to buy from a choice of items at a trader (expensive)
+    sell items to a trader for silver pennies (cheap)
+    trader items will generate at player level on first browse
+
+items
+
+    monsters and the environment scales to player level
+    guns and items give the player their advantage over the environment
+
+    no cap on items or effects
+
+    offensive
+        +X% increased damage (stacks)
+        -X% ammo replenish time
+        hit harder on enemies with more health than you
+
+    defensive
+        move X% faster after a kill
+        +X% increased defence
+
+    medic
+        heal X% of the monster's health on kill
+        slowly heal nearby players
+        X% faster health regeneration
+
+    passive
+        move X% faster
+        jump X% higher
+        +1 mid-air jump
+
+single use items
+
+    used by clicking the item in the inventory screen
+    each has a single use, but are stackable
+
+    all perks use the player's stats in some way,
+    so there is no need to have different levels
+
+    offensive
+        20s double damage
+        10s infinite ammo
+        machine turret
+        rocket burst
+
+    defensive
+        physical barricade
+        10s force field
+        10s invincibility
+        20s half damage
+
+    medic
+        instant full heal
+        heal X% instantly
+        10s triple regeneration
+
+    passive
+        teleport pads
+        30s time freeze
+
+
+
