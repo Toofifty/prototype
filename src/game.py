@@ -3,8 +3,6 @@ Handles the game loop and all game logic
 
 """
 
-from enum import Enum
-
 import pygame
 
 import camera
@@ -25,33 +23,24 @@ EXIT = 0
 RUNNING = 1
 
 controls = Controls()
-player1 = None
+player1 = LocalPlayer("kyle", controls)
 player2 = None
 
-cursor = None
+cursor = Cursor(options.centre(), GameFont())
 state = 1
 
-ab = None
+ab = AngelBoots()
+
 
 def init():
-    pygame.init()
-    render.init()
     particle.init()
-
-    global player1
-    player1 = LocalPlayer("kyle", controls)
-
-    global cursor
-    cursor = Cursor(options.centre(), GameFont())
 
     render.add_screen_sprites(cursor, cursor.hover_text)
 
     map.load_map("2")
 
-    global ab
-    ab = AngelBoots()
-
     camera.init(map.width(), map.height())
+
 
 def run():
     play_time = 0
@@ -72,8 +61,8 @@ def run():
 
         # update cursor
         cursor_pos_x, cursor_pos_y = pygame.mouse.get_pos()
-        cursor.update((cursor_pos_x / options.scale(), cursor_pos_y / options.scale()),
-                           controls.click)
+        cursor.move((cursor_pos_x / options.scale(), cursor_pos_y / options.scale()),
+                    controls.click)
 
         # update cursor text
         cursor.set_hover_text(examine.find_examine_text(cursor.point()))
@@ -88,6 +77,8 @@ def run():
 
         # render screen
         render.draw()
+
+        camera.follow(player1.rect)
 
         # debug help
         if action == "change_gun":

@@ -5,11 +5,17 @@ Handles UI/Menu states and initialises
 the game.
 """
 
-import game
+import pygame
+import render
 
 
 def main():
-    # options = Options(save_file)
+    # initialise pygame here so all modules
+    # have instant access to pygame functions
+    pygame.init()
+    render.init()
+
+    import game
     game.init()
     game.run()
 

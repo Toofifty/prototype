@@ -20,7 +20,7 @@ class DroppedItem(GameSprite):
         self.rect.size = self.image.get_rect().size
         dropped_items.append(self)
 
-    def collide(self, player):
+    def collide_player(self, player):
         if pygame.sprite.collide_rect(self, player):
             self.pickup(player)
 
@@ -37,7 +37,7 @@ class Item(ScreenSprite):
         self.amount = 0
 
     def set_icon(self, sheet, position):
-        self.create_sheet_image("{}{}.png".format(ITEM_FOLDER, sheet), position)
+        self.create_image("{}{}.png".format(ITEM_FOLDER, sheet), position)
 
     def acquire(self):
         self.visible = True

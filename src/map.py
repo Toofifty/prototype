@@ -3,7 +3,6 @@ import re
 import pygame
 
 import util
-import render
 import camera
 
 DEF_PATTERN = re.compile(r"^!def (\^?)(\S): ([a-z_-]+)\((\d+), ?(\d+)\)$")
@@ -12,6 +11,7 @@ TYPE_PATTERN = re.compile(r"^type: ([a-z]+)")
 TILE_SIZE = 16
 
 map = []
+
 
 def load_map(name):
     file = util.read("{}{}_info.txt".format(util.MAPS_FOLDER, name))
@@ -52,12 +52,13 @@ def load_map(name):
             x = 0
         map.append(Map(i == 1, map_surface))
 
+
 def width():
     return map[0].rect.width
 
+
 def height():
     return map[0].rect.height
-
 
 
 class Map(pygame.sprite.DirtySprite):

@@ -1,13 +1,24 @@
 from pygame.locals import *
 import pygame
 
+
 class Controls(object):
+    """List of actions and events relevant to controlling the character or game.
+
+    Contains a list of booleans corresponding to actions, which are processed in
+    the LocalPlayer class.
+    """
+
     def __init__(self):
+        # set all attributes to False
         self.up = self.down = self.left = self.right = False
         self.jump = self.shift = self.cam_left = self.cam_right = False
         self.click = self.scroll_up = self.scroll_down = False
 
     def update_keys(self):
+        """Update the key states to those of the keyboard that are being pressed.
+
+        """
         keys = pygame.key.get_pressed()
         self.jump = keys[K_SPACE]
         self.up = keys[K_w]
@@ -18,18 +29,19 @@ class Controls(object):
         self.cam_left = keys[K_LEFT]
         self.cam_right = keys[K_RIGHT]
 
-
     def process_event(self, event):
-        """
+        """Process the input from one frame of the game.
+
         Used for single actions, like toggles
         etc. update_keys() should be used for movement
         and continuous key checking
 
-        :param event:
+        :param event: list of actions done in the frame
         :return:
         """
-
         action = None
+
+        # TODO: multiple returns
 
         # Process all sub events
         for e in event:

@@ -5,8 +5,8 @@ class Cursor(Sprite):
     def __init__(self, position, text_font):
         Sprite.__init__(self, position)
 
-        self.add_sheet_image("clicked", "other/gui.png", (16, 0, 16, 16))
-        self.add_sheet_image("default", "other/gui.png", (0, 0, 16, 16))
+        self.add_image("clicked", "other/gui.png", (16, 0, 16, 16))
+        self.add_image("default", "other/gui.png", (0, 0, 16, 16))
 
         self.rect.topleft = position
 
@@ -18,7 +18,7 @@ class Cursor(Sprite):
     def point(self):
         return self.rect.topleft
 
-    def update(self, position, click):
+    def move(self, position, click):
         if click and not self.clicked:
             self.click(position)
         elif not click and self.clicked == True:
@@ -26,7 +26,7 @@ class Cursor(Sprite):
             self.clicked = False
 
         self.rect.topleft = position
-        self.hover_text.update(self.rect.bottomright)
+        self.hover_text.move(self.rect.bottomright)
 
         self.dirty = 1
 
@@ -50,5 +50,5 @@ class HoverText(Sprite):
     def set_text(self, text):
         self.image = self.font.create_text(text)
 
-    def update(self, position):
+    def move(self, position):
         self.rect.topleft = position

@@ -10,6 +10,7 @@ from map import map
 
 GUN_FOLDER = util.SPRITES_FOLDER + "gun\\"
 
+
 class Gun(GameSprite):
     def __init__(self, position):
         GameSprite.__init__(self, position)
@@ -75,7 +76,6 @@ class Gun(GameSprite):
         self.recoil_step -= 1
 
 
-
 class Bullet(particle.Particle):
     def __init__(self, gun, position, dir, texture):
         particle.Particle.__init__(self, position, texture)
@@ -89,20 +89,17 @@ class Bullet(particle.Particle):
         self.rect = self.rect.move(self.velocity.tup)
         return particle.Particle.update(self)
 
-    def undo_update(self):
-        self.rect = self.rect.move((-self.dir * self.gun.speed, -self.y_vel))
-
     def collide_map(self):
         if self.dir == 1:
             col = map[1].mask.get_at(self.rect.midright)
         else:
             col = map[1].mask.get_at(self.rect.midleft)
         if col:
-            #self.undo_update()
+            # self.undo_update()
             particle.animated_effect("hit", self.rect.topleft if self.dir == -1 else self.rect.topright)
         return col
 
-    def collide(self, sprite):
+    def collide_sprite(self, sprite):
         # cases to quickly return false to speed up collision checking
         if sprite.rect.top > self.rect.top or sprite.rect.bottom < self.rect.bottom:
             return False
@@ -118,4 +115,3 @@ class Bullet(particle.Particle):
         if col:
             particle.animated_effect("hit", self.rect.topleft if self.dir == -1 else self.rect.topright)
         return col
-

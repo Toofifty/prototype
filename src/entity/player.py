@@ -2,8 +2,7 @@ import pygame
 
 import camera
 from entity import particle
-from entity.sprites import GameSprite, GRAVITY, WALK_SPEED, SPRINT_MULT, JUMP_HEIGHT
-from map import map
+from entity.sprites import GameSprite, WALK_SPEED, SPRINT_MULT, JUMP_HEIGHT
 
 
 class Player(GameSprite):
@@ -112,8 +111,6 @@ class Player(GameSprite):
             self.image = pygame.transform.flip(self.image, True, False)
 
         self.dirty = 1
-
-        camera.follow(self.rect)
 
     def shoot(self):
         if self.primary is not None:
