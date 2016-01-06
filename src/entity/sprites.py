@@ -165,7 +165,7 @@ class Sprite(DirtySprite):
 
         :param image: string name of image
         """
-        if self.current_texture is not image:
+        if self.current_texture is not image and image in self.images.keys():
             self.image = self.images[image]
             self.current_texture = image
             self.rect.size = self.image.get_rect().width - 1, self.image.get_rect().height - 1

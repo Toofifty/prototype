@@ -54,10 +54,15 @@ def run():
         action = controls.process_event(pygame.event.get())
         controls.update_keys()
 
+        # debug actions
         if action == "shoot":
             player1.shoot()
         elif action == "spawn_item":
             DroppedItem(ab, player1.rect.move(30, 0).center)
+        elif action == "spawn_gun":
+            player1.add_weapon(Gun((0, 0)))
+        elif action == "swap_gun":
+            player1.swap_weapons()
 
         # update cursor
         cursor_pos_x, cursor_pos_y = pygame.mouse.get_pos()
@@ -78,8 +83,5 @@ def run():
         # render screen
         render.draw()
 
+        # update the camera to the player's position
         camera.follow(player1.rect)
-
-        # debug help
-        if action == "change_gun":
-            player1.add_weapon(Gun((0, 0)))

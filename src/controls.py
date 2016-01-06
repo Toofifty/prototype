@@ -54,7 +54,10 @@ class Controls(object):
                     raise SystemExit("ESCAPE-QUIT")
 
                 elif e.key == K_e:
-                    action = "change_gun"
+                    action = "spawn_gun"
+
+                elif e.key == K_y:
+                    action = "swap_gun"
 
                 elif e.key == K_r:
                     action = "spawn_item"
