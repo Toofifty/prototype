@@ -23,7 +23,7 @@ EXIT = 0
 RUNNING = 1
 
 controls = Controls()
-player1 = LocalPlayer("kyle", controls)
+player1 = LocalPlayer("arnold", controls)
 player2 = None
 
 cursor = Cursor(options.centre(), GameFont())
