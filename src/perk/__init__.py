@@ -1,69 +1,72 @@
 import pygame
 from entity.sprites import ScreenSprite, GameSprite
+from gui import font
 
-ITEM_FOLDER = "item\\"
+ITEM_FOLDER = "perk\\"
 
-# list of items currently dropped on the
+# list of perks currently dropped on the
 # ground that can be picked up by players
-dropped_items = []
+dropped_perks = []
 
 
-def item_collide(player):
-    """Check each item to see if the player has collided with it, and
-    pick up the item if it has.
+def perk_collide(player):
+    """Check each perk to see if the player has collided with it, and
+    pick up the perk if it has.
 
     :param player:
     :return:
     """
-    for item in dropped_items:
-        if pygame.sprite.collide_rect(item, player):
-            item.pickup(player)
+    for perk in dropped_perks:
+        if pygame.sprite.collide_rect(perk, player):
+            perk.pickup(player)
 
 
-class DroppedItem(GameSprite):
-    """GameSprite container for an item dropped in the world.
+class DroppedPerk(GameSprite):
+    """GameSprite container for an perk dropped in the world.
 
     Can be dropped from chests and is picked up when a player
     collides with it.
     """
 
-    def __init__(self, item, position):
+    def __init__(self, perk, position):
         """
-        :param item: base.Item instance item to show
-        :param position: world position to drop the item
+        :param item: base.Item instance perk to show
+        :param position: world position to drop the perk
         """
         GameSprite.__init__(self, position)
-        self.examine = item.examine
-        self.item = item
-        self.image = item.image
+        self.examine = perk.examine
+        self.item = perk
+        self.image = perk.original_icon
         self.rect.size = self.image.get_rect().size
-        dropped_items.append(self)
+        dropped_perks.append(self)
 
     def kill(self):
         # may be killed by other means than being picked up
         # i.e. despawn timer, leaving area
         GameSprite.kill(self)
-        dropped_items.remove(self)
+        dropped_perks.remove(self)
 
     def pickup(self, player):
-        """Add the item to the player's inventory then destroys the dropped item.
+        """Add the perk to the player's inventory then destroys the dropped perk.
 
-        :param player: player to receive item
+        :param player: player to receive perk
         """
         player.add_item(self.item)
         self.kill()
 
 
-class Item(ScreenSprite):
-    """Base item class.
+class BasicPerk(ScreenSprite):
+    """Base perk class.
 
-    Contains the amount and basic functions of every item.
+    Contains the amount and basic functions of every perk.
     """
+
     def __init__(self, name, desc, position=(0, 0)):
         ScreenSprite.__init__(self, position)
-        self.examine = "{}: {}".format(name.title(), desc)
+        self.examine = [name.title(), desc]
         self.amount = 0
         self.player_effect = None
+        self.original_icon = None
 
     def add_player_effect(self):
         """Add a player effect sprite.
@@ -71,18 +74,27 @@ class Item(ScreenSprite):
         self.player_effect = GameSprite((0, 0))
 
     def set_icon(self, file, rect):
-        """Set the inventory icon of the item.
+        """Set the inventory icon of the perk.
 
         :param file: string file to load from
         :param rect: rect location of image
         """
         self.create_image("{}{}.png".format(ITEM_FOLDER, file), rect)
+        self.original_icon = self.image
 
     def acquire(self):
-        """Acquire another item of this type.
+        """Acquire another perk of this type.
         """
         self.visible = True
         self.amount += 1
+        if self.amount > 1:
+            am_image = font.mini_num.create_text("*{}".format(self.amount))
+            new_icon = self.original_icon.copy()
+            pos = (new_icon.get_width() - am_image.get_width(), new_icon.get_height() - am_image.get_height())
+            print(am_image.get_size())
+            print(pos)
+            new_icon.blit(am_image, pos)
+            self.image = new_icon
 
     def draw_on_player(self, player, screen):
         """Draw an image or animation on the player.

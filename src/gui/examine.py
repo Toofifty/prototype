@@ -27,14 +27,14 @@ def remove_game_object(game_sprite):
 
 
 def find_examine_text(cursor_pos):
-    for object in screen_objects:
-        if object.rect.collidepoint(cursor_pos):
-            return object.examine
+    for obj in screen_objects:
+        if obj.rect.collidepoint(cursor_pos):
+            return obj.examine
 
-    for object in game_objects:
+    for obj in game_objects:
         # regular collision
-        if camera.apply(object.rect).collidepoint(cursor_pos):
-            return object.examine
+        if camera.apply(obj.rect).collidepoint(cursor_pos):
+            return obj.examine
 
         # pixel perfect collision
         # try:

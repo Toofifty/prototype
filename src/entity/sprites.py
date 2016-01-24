@@ -1,3 +1,5 @@
+import traceback
+
 import pygame
 from pygame.sprite import DirtySprite
 
@@ -63,7 +65,7 @@ class Sprite(DirtySprite):
         self.texture_folder = ""
 
         # the text shown when hovered by the cursor
-        self.examine = ""
+        self.examine = []
 
         # particles need to check for collisions with
         # all other sprites
@@ -105,7 +107,7 @@ class Sprite(DirtySprite):
             return self.strips
         except:
             print("Failed to load animation at {0} in {1}".format(rect, file))
-            raise
+            traceback.print_exc()
 
     def add_animation(self, animation, rect, frames=8, loop=True, fpi=4):
         """Create and add an animation to the dict.

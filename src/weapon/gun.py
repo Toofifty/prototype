@@ -10,6 +10,11 @@ from map import map
 
 GUN_FOLDER = util.SPRITES_FOLDER + "gun\\"
 
+CHARS = ["A", "C", "E", "F", "G", "J", "K", "L", "M", "O", "P", "R", "S", "T", "-", "-", " "]
+
+TYPES = ["Lever-action rifle", "Bolt-action rifle", "Assault rifle", "Sniper rifle", "Carbine", "SMG", "LMG", "Pistol",
+         "Rocket launcher", "Pulsar rifle", "Ion shotgun", "Combat shotgun"]
+
 
 class Gun(GameSprite):
     def __init__(self, position):
@@ -24,17 +29,38 @@ class Gun(GameSprite):
 
         self.flipped = False
 
-        self.examine = self.pieces
+        self.name = self.generate_name()
 
         self.speed = random.randint(1, 12)
 
-        self.examine = self.examine + " - " + str(self.speed)
+        self.examine = [self.name, random.choice(TYPES), "Fire rate: {}".format(random.randint(120, 600)),
+                        "Bullet speed: {}m/s".format(self.speed)]
 
         self.recoil = 0
         self.recoil_step = self.speed
 
+        self.being_used = False
+
+    def generate_name(self):
+        name = random.choice(CHARS)
+        # ensure gun name doesn't start with a dash
+        while name in ["-", " "]:
+            name = random.choice(CHARS)
+
+        for i in range(random.randint(0, 3)):
+            name += random.choice(CHARS)
+
+        name += self.pieces
+
+        if len(name) < 5:
+            for i in range(random.randint(0, 2)):
+                name += random.choice(CHARS)
+
+        return name
+
     def update(self):
-        pass
+        if not self.being_used:
+            GameSprite.update(self)
 
     def generate_stats(self, level):
         pass
@@ -44,7 +70,7 @@ class Gun(GameSprite):
         g = random.randint(1, 100)
         if g > 99:
             i = 9
-        self.pieces = self.pieces + str(i)
+        self.pieces += str(i)
 
         return util.load_alpha_image("{}\\{}\\{}.png".format(GUN_FOLDER, part, i))
 

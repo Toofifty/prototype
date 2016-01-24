@@ -1,10 +1,11 @@
 import pygame
 
 from entity import particle
-from entity.sprites import GameSprite, WALK_SPEED, SPRINT_MULT, JUMP_HEIGHT
+from entity.__init__ import NetEntity
+from entity.sprites import WALK_SPEED, SPRINT_MULT, JUMP_HEIGHT
 
 
-class Player(GameSprite):
+class Player(NetEntity):
     """Basic player.
 
     Contains inventory, animations, jumps and weapon changes.
@@ -17,7 +18,7 @@ class Player(GameSprite):
         :param name: string name of character
         :param position: tuple(2) starting position
         """
-        GameSprite.__init__(self, position)
+        NetEntity.__init__(self, position)
 
         # set the texture folder
         self.texture_folder = "player\\{}\\".format(name)
@@ -25,12 +26,12 @@ class Player(GameSprite):
         # Add all animations
         # Last animation loaded will be used
         self.add_animation("jump_armed", (0, 0, 16, 32), frames=4, fpi=6)
-        self.add_animation("run_armed", (0, 0, 16, 32), frames=15, fpi=4)
-        self.add_animation("idle_armed", (0, 0, 16, 32), frames=2, fpi=30)
+        # self.add_animation("run_armed", (0, 0, 16, 32), frames=15, fpi=4)
+        self.add_animation("idle_armed", (0, 0, 16, 32), frames=4, fpi=30)
 
-        self.add_animation("jump_unarmed", (0, 0, 16, 32), frames=4, fpi=6)
-        self.add_animation("run_unarmed", (0, 0, 16, 32), frames=15, fpi=4)
-        self.add_animation("idle_unarmed", (0, 0, 16, 32), frames=2, fpi=30)
+        self.add_animation("jump_unarmed", (0, 0, 16, 32), frames=4, fpi=15)
+        # self.add_animation("run_unarmed", (0, 0, 16, 32), frames=15, fpi=4)
+        self.add_animation("idle_unarmed", (0, 0, 16, 32), frames=4, fpi=30)
 
         # whether or not the character sprite is
         # facing right (False) or left (True)
@@ -40,7 +41,7 @@ class Player(GameSprite):
         # character.
         # will most likely be changed to player's
         # username, and name replaced with 'skin'
-        self.examine = name.title()
+        self.examine = [name.title(), "Lvl 1 scout", "Unarmed"]
 
         # if the player has at least one gun
         self.is_armed = False
@@ -59,23 +60,23 @@ class Player(GameSprite):
         # one frame
         self.is_jumping = False
 
-        # inventory of items
-        # amount of items are stored in the items
+        # inventory of perks
+        # amount of perks are stored in the perks
         # themselves
-        self.items = []
+        self.perks = []
 
     def add_item(self, item):
-        """Add an item to the player's inventory.
+        """Add an perk to the player's inventory.
 
-        :param item: item to add
+        :param item: perk to add
         """
-        # do not add the item if it is already in
+        # do not add the perk if it is already in
         # the list, multiples are handled inside
-        # the item class as item.amount
-        if not item in self.items:
-            self.items.append(item)
+        # the perk class as perk.amount
+        if not item in self.perks:
+            self.perks.append(item)
 
-        # tell the item to increment it's stack
+        # tell the perk to increment it's stack
         # and become visible
         item.acquire()
 
@@ -83,7 +84,7 @@ class Player(GameSprite):
         """Internal jump method.
 
         Called inside the regular jump method, which may
-        be modified by items.
+        be modified by perks.
 
         :return: True if jump is successful, False if not
         """
@@ -103,25 +104,26 @@ class Player(GameSprite):
     def jump(self):
         """External jump method.
 
-        Check items for pre_ methods, then performs
-        the internal method and checks items for post_
+        Check perks for pre_ methods, then performs
+        the internal method and checks perks for post_
         methods.
 
         """
         # calls the pre_jump method
-        # on all items
+        # on all perks
         # if any return True, the internal jump is cancelled
-        cancel = any(item.pre_jump(self) for item in self.items)
+        cancel = any(perk.pre_jump(self) for perk in self.perks)
 
         if not cancel:
             # if the first jump is successful, we
             # shouldn't be able to jump again straight
             # away (prevents instant double jumps)
-            if self._jump(): return
+            if self._jump():
+                return
 
         # calls the post_jump method
-        # on all items
-        [item.post_jump(self) for item in self.items]
+        # on all perks
+        [perk.post_jump(self) for perk in self.perks]
 
     def add_weapon(self, weapon):
         """Add a weapon as primary or secondary, swapping out primary if both are taken.
@@ -134,14 +136,23 @@ class Player(GameSprite):
 
         elif self.secondary is None:
             # push primary into secondary slot
-            self.secondary = self.primary
-            self.primary = weapon
+            self.secondary = weapon
+            self.swap_weapons()
 
         else:
-            # TODO: drop primary weapon
-            # self.primary.drop()
-            self.primary.kill()
+            self.drop_primary()
             self.primary = weapon
+        weapon.being_used = True
+
+    def drop_primary(self):
+        if self.primary is not None:
+            self.primary.being_used = False
+            self.primary = None
+            if self.secondary is not None:
+                self.primary = self.secondary
+                self.secondary = None
+            else:
+                self.primary = None
 
     def swap_weapons(self):
         """Swap primary and secondary weapons.
@@ -157,9 +168,9 @@ class Player(GameSprite):
         :param animation: string animation name
         """
         if self.is_armed:
-            GameSprite.set_animation(self, animation + "_armed")
+            NetEntity.set_animation(self, animation + "_armed")
         else:
-            GameSprite.set_animation(self, animation + "_unarmed")
+            NetEntity.set_animation(self, animation + "_unarmed")
 
     def get_animation(self):
         """Get the animation name, minus armed/unarmed.
@@ -181,6 +192,15 @@ class Player(GameSprite):
         if self.primary is not None:
             self.primary.shoot()
 
+    def update(self):
+        if self.velocity.x != 0:
+            self.set_animation("run")
+            self.flipped = self.velocity.x < 0
+        else:
+            self.set_animation("idle")
+
+        NetEntity.update(self)
+
     def draw(self, screen):
         """Draw the player to the screen.
 
@@ -199,10 +219,10 @@ class Player(GameSprite):
         if self.flipped:
             self.image = pygame.transform.flip(self.image, True, False)
 
-        GameSprite.draw(self, screen)
+        NetEntity.draw(self, screen)
 
-        # overlay item effects on player
-        [item.draw_on_player(self, screen) for item in self.items]
+        # overlay perk effects on player
+        [item.draw_on_player(self, screen) for item in self.perks]
 
         if self.primary is not None:
             x_tr = 6
@@ -213,7 +233,7 @@ class Player(GameSprite):
 
             # manual tracking of gun onto player animation
             # TODO!!
-            if self.get_animation() == "idle" and self.strips.i == 1:
+            if self.get_animation() == "idle" and self.strips.i in [2, 3]:
                 y_tr += 1
 
             elif self.get_animation() == "run" and self.strips.i in [0, 1, 2, 7, 8, 9]:
@@ -274,20 +294,13 @@ class LocalPlayer(Player):
         if self.controls.left:
             # set velocity to walk_speed facing left
             self.velocity.x = -WALK_SPEED * (SPRINT_MULT if self.controls.shift else 1)
-            self.set_animation("run")
-            # set to facing left
-            self.flipped = True
 
         elif self.controls.right:
             # set velocity to walk_speed facing right
             self.velocity.x = WALK_SPEED * (SPRINT_MULT if self.controls.shift else 1)
-            self.set_animation("run")
-            # set to facing right
-            self.flipped = False
 
         else:
             # no movement input == idle
             self.velocity.x = 0
-            self.set_animation("idle")
 
         Player.update(self)

@@ -71,6 +71,9 @@ class Vector(object):
         """
         return self.x, self.y, self.z
 
+    def copy(self):
+        return Vector(self.x, self.y, self.z)
+
 
 class SpriteSheet(object):
     """Contains the image of a sprite sheet and methods to extract sprites from it.
@@ -109,6 +112,62 @@ class SpriteSheet(object):
             for x in range(frames)
             ]
         return self.get_images(sprites)
+
+
+class GUIBackground(object):
+    """Used to generate a background with edges over a surface.
+    Use before drawing text/other images on the surface.
+
+    """
+
+    def __init__(self, background_template):
+        self.template = background_template
+        # size of each piece
+        self.ps = self.template.get_width() // 3
+
+        # pieces, top-left -> bottom-right
+        self.tl = self.sub(0, 0)
+        self.tc = self.sub(1, 0)
+        self.tr = self.sub(2, 0)
+        self.ml = self.sub(0, 1)
+        self.mc = self.sub(1, 1)
+        self.mr = self.sub(2, 1)
+        self.bl = self.sub(0, 2)
+        self.bc = self.sub(1, 2)
+        self.br = self.sub(2, 2)
+
+    def draw_on(self, surface):
+        num_x = surface.get_width() // self.ps
+        num_y = surface.get_height() // self.ps
+        for i in range(num_x):
+            for j in range(num_y):
+                pos = (i * self.ps, j * self.ps)
+                if i == 0:
+                    if j == 0:
+                        # top left
+                        surface.blit(self.tl, pos)
+                    elif j == num_y - 1:
+                        surface.blit(self.bl, pos)
+                    else:
+                        # top centre
+                        surface.blit(self.ml, pos)
+                elif j == 0:
+                    if i == num_x - 1:
+                        surface.blit(self.tr, pos)
+                    else:
+                        surface.blit(self.tc, pos)
+                elif i == num_x - 1:
+                    if j == num_y - 1:
+                        surface.blit(self.br, pos)
+                    else:
+                        surface.blit(self.mr, pos)
+                elif j == num_y - 1:
+                    surface.blit(self.bc, pos)
+                else:
+                    surface.blit(self.mc, pos)
+
+    def sub(self, posx, posy):
+        return self.template.subsurface((posx * self.ps, posy * self.ps), (self.ps, self.ps))
 
 
 class SheetAnimation(object):

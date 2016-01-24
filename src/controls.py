@@ -29,14 +29,12 @@ class Controls(object):
         self.cam_left = keys[K_LEFT]
         self.cam_right = keys[K_RIGHT]
 
-    def process_event(self, event):
+    def process_events(self):
         """Process the input from one frame of the game.
 
         Used for single actions, like toggles
         etc. update_keys() should be used for movement
         and continuous key checking
-
-        :param event: list of actions done in the frame
         :return:
         """
         action = None
@@ -44,13 +42,15 @@ class Controls(object):
         # TODO: multiple returns
 
         # Process all sub events
-        for e in event:
+        for e in pygame.event.get():
             if e.type == QUIT:
+                pygame.quit()
                 raise SystemExit("QUIT")
 
             elif e.type == KEYDOWN:
                 if e.key == K_ESCAPE:
                     # TODO: pause and menu
+                    pygame.quit()
                     raise SystemExit("ESCAPE-QUIT")
 
                 elif e.key == K_e:
@@ -67,6 +67,15 @@ class Controls(object):
 
                 elif e.key == K_F11:
                     action = "fullscreen"
+
+                elif e.key == K_h:
+                    action = "host"
+
+                elif e.key == K_j:
+                    action = "connect"
+
+                elif e.key == K_l:
+                    action = "test_sock"
 
             elif e.type == MOUSEBUTTONDOWN:
                 if e.button == 1:

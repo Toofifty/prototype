@@ -1,9 +1,10 @@
 options = {
-    "view_width": 1280,
-    "view_height": 640,
+    "view_width": 1920,
+    "view_height": 1080,
     "fullscreen": 0,
     "scale": 2
 }
+
 
 def fullscreen():
     return options["fullscreen"] == 1
@@ -17,6 +18,14 @@ def view_height():
     return options["view_height"]
 
 
+def game_width():
+    return view_width() // scale()
+
+
+def game_height():
+    return view_height() // scale()
+
+
 def scale():
     return options["scale"]
 
@@ -26,7 +35,7 @@ def dimensions():
 
 
 def game_dimensions():
-    return view_width() // scale(), view_height() // scale()
+    return game_width(), game_height()
 
 
 def centre():

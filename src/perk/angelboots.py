@@ -1,11 +1,11 @@
-from item.base import Item
+from perk import BasicPerk
 from entity.sprites import JUMP_HEIGHT
 from entity import particle
 
 
-class AngelBoots(Item):
+class AngelBoots(BasicPerk):
     def __init__(self):
-        Item.__init__(self, "angel boots", "gain an extra jump")
+        BasicPerk.__init__(self, "angel boots", "+1 jump")
         self.set_icon("angel_boots", (0, 0, 16, 16))
         self.visible = False
 

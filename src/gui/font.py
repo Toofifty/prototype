@@ -10,6 +10,24 @@ CHARS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', '
          '>', '=', '?', '@', '[', ']', '\\', '^', '_', '{', '|', '}', ' ']
 
 
+# create a font from a png with 6 rows of 16 characters, in the order of CHARS
+def font_from_image(file):
+    image = util.load_alpha_image("{0}{1}.png".format(util.SPRITES_FOLDER, file))
+    char_h = image.get_height() // 6
+    char_w = image.get_width() // 16
+
+    images = []
+
+    for i in range(6):
+        x = 0
+        y = i * char_h
+        while x < image.get_width():
+            images.append(image.subsurface((x, y), (char_w, char_h)))
+            x += char_w
+
+    return Font(images)
+
+
 class Font(object):
     def __init__(self, char_images):
         self.chars = {}
@@ -29,7 +47,7 @@ class Font(object):
         # Make an array of only available characters
         chars = [char for char in text if char in self.chars]
         # Create a new surface that can fit the entire text
-        image = pygame.Surface(((len(chars) + 2) * self.char_w, self.char_h)).convert()
+        image = pygame.Surface(((len(chars)) * self.char_w, self.char_h)).convert()
         image.fill((0, 0, 255))
         image.set_colorkey((0, 0, 255), pygame.RLEACCEL)
         # Add each char one by one to the surface
@@ -37,22 +55,8 @@ class Font(object):
             image.blit(self.chars[char], (i * self.char_w, 0))
         return image
 
-class GameFont(Font):
-    def __init__(self):
-        num_rows = 6
-        char_width = 8
 
-        self.font_image = util.load_alpha_image("{0}reg_font.png".format(util.SPRITES_FOLDER))
-
-        char_images = []
-        char_height = self.font_image.get_height() // num_rows
-
-        for i in range(num_rows):
-            x = 0
-            y = i * char_height
-            while x < self.font_image.get_width():
-                char_image = self.font_image.subsurface((x, y), (char_width, char_height))
-                char_images.append(char_image)
-                x += char_width
-
-        Font.__init__(self, char_images)
+# all fonts must be in a png with 6 rows of 16 columns
+regular = font_from_image("reg_font")
+title = font_from_image("title_font")
+mini_num = font_from_image("mini_num_font")
