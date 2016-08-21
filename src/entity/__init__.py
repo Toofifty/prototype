@@ -41,7 +41,7 @@ def set_player_to(eid):
 
     :param eid:
     """
-    if hasattr(net_entities[0], "add_item"):
+    if len(net_entities) > 0 and hasattr(net_entities[0], "add_item"):
         net_entities[0].id = eid
         net_entities[eid] = net_entities[0]
         net_entities[0] = None

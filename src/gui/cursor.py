@@ -5,7 +5,6 @@ import options
 from entity.sprites import Sprite
 
 
-
 class Cursor(Sprite):
     def __init__(self, position, text_font):
         Sprite.__init__(self, position)

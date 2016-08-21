@@ -51,8 +51,8 @@ class DroppedPerk(GameSprite):
 
         :param player: player to receive perk
         """
-        player.add_item(self.item)
-        self.kill()
+        if player.add_item(self.item):
+            self.kill()
 
 
 class BasicPerk(ScreenSprite):
@@ -67,6 +67,12 @@ class BasicPerk(ScreenSprite):
         self.amount = 0
         self.player_effect = None
         self.original_icon = None
+        self.max_amount = 16
+
+    def set_max_amount(self, amount):
+        """Set the maximum amount of this item the player can own
+        """
+        self.max_amount = amount
 
     def add_player_effect(self):
         """Add a player effect sprite.
@@ -84,17 +90,24 @@ class BasicPerk(ScreenSprite):
 
     def acquire(self):
         """Acquire another perk of this type.
+
+        :return: true if successful
         """
+        if self.amount >= self.max_amount:
+            return False
+
         self.visible = True
         self.amount += 1
         if self.amount > 1:
-            am_image = font.mini_num.create_text("*{}".format(self.amount))
+            am_image = font.mini_num.create_text(str(self.amount))
             new_icon = self.original_icon.copy()
             pos = (new_icon.get_width() - am_image.get_width(), new_icon.get_height() - am_image.get_height())
             print(am_image.get_size())
             print(pos)
             new_icon.blit(am_image, pos)
             self.image = new_icon
+
+        return True
 
     def draw_on_player(self, player, screen):
         """Draw an image or animation on the player.

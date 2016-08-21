@@ -1,5 +1,4 @@
 import random
-
 import pygame
 import math
 
@@ -41,6 +40,10 @@ class Gun(GameSprite):
 
         self.being_used = False
 
+        self.original_image = self.image
+
+        self.rotation = 0
+
     def generate_name(self):
         name = random.choice(CHARS)
         # ensure gun name doesn't start with a dash
@@ -61,6 +64,11 @@ class Gun(GameSprite):
     def update(self):
         if not self.being_used:
             GameSprite.update(self)
+
+    def rotate_to(self, angle):
+        self.rotation = angle
+        self.image = pygame.transform.rotate(self.original_image, self.rotation)
+        self.rect = pygame.Rect(self.rect.topleft, self.image.get_size())
 
     def generate_stats(self, level):
         pass

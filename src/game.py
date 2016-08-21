@@ -12,9 +12,10 @@ import options
 import render
 import map
 import util
+import entity
 from gui import font
 from controls import Controls
-from entity import particle, __init__
+from entity import particle
 from entity.player import LocalPlayer, Player
 from gui import examine
 from gui.cursor import Cursor
@@ -29,7 +30,7 @@ EXIT = 0
 RUNNING = 1
 
 controls = Controls()
-player1 = LocalPlayer("arnold", controls)
+player1 = LocalPlayer("pluto", controls)
 player2 = None
 
 cursor = Cursor(options.centre(), font.regular)
@@ -66,7 +67,7 @@ def init_host():
 def init_net():
     if not is_host:
         client.init("localhost", 43244)
-        __init__.set_player_to(1)
+        entity.set_player_to(1)
 
     t = Thread(target=net_loop)
     t.daemon = True
@@ -114,8 +115,11 @@ def run():
         # update window title to show frame rate
         pygame.display.set_caption("FPS: {0:.2f}".format(clock.get_fps()))
 
+        # update player with cursor information
+        player1.update_cursor(cursor, camera)
+
         # flip player to face cursor
-        player1.flip(cursor.point()[0] < camera.apply(player1.rect).centerx)
+        # player1.flip(cursor.point()[0] < camera.apply(player1.rect).centerx)
 
         perk_collide(player1)
 
@@ -136,11 +140,11 @@ def host_loop():
         tick_count += 1
 
         # update velocities
-        __init__.sync_velocities()
+        entity.sync_velocities()
 
         if tick_count % 20 == 0:
             # update positions
-            __init__.sync_positions()
+            entity.sync_positions()
 
 
 def net_loop():
@@ -159,13 +163,13 @@ def net_loop():
 def net_update(data):
     if data["op"] == common.OP_ENTITY_MOVE:
         if not is_host:
-            ent = __init__.entity_from_id(data["eid"])
+            ent = entity.entity_from_id(data["eid"])
             if ent is None:
                 print("added net player 0")
-                __init__.add_net_entity(data["eid"], Player("arnold", (data["x"], data["y"])))
+                entity.add_net_entity(data["eid"], Player("arnold", (data["x"], data["y"])))
             else:
                 print("updated player")
                 ent.rect.topleft = data["x"], data["y"]
     elif data["op"] == common.OP_ENTITY_VEL:
         if not is_host:
-            __init__.entity_from_id(data["eid"]).velocity = util.Vector(data["vx"], data["vy"])
+            entity.entity_from_id(data["eid"]).velocity = util.Vector(data["vx"], data["vy"])

@@ -25,7 +25,14 @@ def test_edge(*points):
     :param points: list/tuple of points to check
     :return: True if any points collided with the map.
     """
-    return any(p for p in points if map[1].mask.get_at(p))
+    try:
+        return any(p for p in points if map[1].mask.get_at(p))
+
+    except IndexError:
+        # if there was an error indexing the mask array, then we're
+        # most likely out of bounds.
+        # best option here is to pretend like there was a collision
+            return True
 
 
 class Sprite(DirtySprite):

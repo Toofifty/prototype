@@ -95,7 +95,7 @@ def draw():
 
     # wipe game screen
     # to be replaced with background drawing
-    game_screen.fill((200, 200, 220))
+    game_screen.fill((0, 0, 0))
 
     # draw each map layer
     for map_layer in map:

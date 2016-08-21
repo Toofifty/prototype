@@ -2,7 +2,7 @@ options = {
     "view_width": 1920,
     "view_height": 1080,
     "fullscreen": 0,
-    "scale": 2
+    "scale": 5
 }
 
 

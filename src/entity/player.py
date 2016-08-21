@@ -1,4 +1,5 @@
 import pygame
+import math
 
 from entity import particle
 from entity.__init__ import NetEntity
@@ -25,13 +26,13 @@ class Player(NetEntity):
 
         # Add all animations
         # Last animation loaded will be used
-        self.add_animation("jump_armed", (0, 0, 16, 32), frames=4, fpi=6)
+        self.add_animation("jump_armed", (0, 0, 16, 16), frames=2, fpi=6)
         # self.add_animation("run_armed", (0, 0, 16, 32), frames=15, fpi=4)
-        self.add_animation("idle_armed", (0, 0, 16, 32), frames=4, fpi=30)
+        self.add_animation("idle_armed", (0, 0, 16, 16), frames=2, fpi=30)
 
-        self.add_animation("jump_unarmed", (0, 0, 16, 32), frames=4, fpi=15)
-        # self.add_animation("run_unarmed", (0, 0, 16, 32), frames=15, fpi=4)
-        self.add_animation("idle_unarmed", (0, 0, 16, 32), frames=4, fpi=30)
+        self.add_animation("jump_unarmed", (0, 0, 16, 16), frames=2, fpi=15)
+        self.add_animation("run_unarmed", (0, 0, 16, 16), frames=14, fpi=8)
+        self.add_animation("idle_unarmed", (0, 0, 16, 16), frames=2, fpi=60)
 
         # whether or not the character sprite is
         # facing right (False) or left (True)
@@ -65,20 +66,25 @@ class Player(NetEntity):
         # themselves
         self.perks = []
 
+        # angle the player is aiming
+        # measured in radians from horizontal
+        self.aim = 0
+
     def add_item(self, item):
         """Add an perk to the player's inventory.
 
         :param item: perk to add
+        :return: boolean whether item add was successful
         """
         # do not add the perk if it is already in
         # the list, multiples are handled inside
         # the perk class as perk.amount
-        if not item in self.perks:
+        if item not in self.perks:
             self.perks.append(item)
 
         # tell the perk to increment it's stack
         # and become visible
-        item.acquire()
+        return item.acquire()
 
     def _jump(self):
         """Internal jump method.
@@ -201,6 +207,19 @@ class Player(NetEntity):
 
         NetEntity.update(self)
 
+    def update_cursor(self, cursor, camera):
+        """Update player direction and gun rotation with the cursor's position
+        """
+        screen_position = camera.apply(self.rect).center
+
+        self.flip(cursor.point()[0] < screen_position[0])
+        self.aim = -math.atan2(cursor.point()[1] - screen_position[1], cursor.point()[0] - screen_position[0])
+        self.aim = min(self.aim, math.pi / 4)
+        self.aim = max(self.aim, -math.pi / 4)
+        print self.aim
+        if self.primary:
+            self.primary.rotate_to(self.aim * 180 / math.pi)
+
     def draw(self, screen):
         """Draw the player to the screen.
 
@@ -225,8 +244,8 @@ class Player(NetEntity):
         [item.draw_on_player(self, screen) for item in self.perks]
 
         if self.primary is not None:
-            x_tr = 6
-            y_tr = -5
+            x_tr = 16
+            y_tr = -2
             if self.examine == "Kyle":
                 # kyle is short
                 y_tr = -1
@@ -253,10 +272,10 @@ class Player(NetEntity):
             # move the gun rect left or right depending
             # on which way its facing
             if self.primary.flipped:
-                self.primary.rect.topright = self.rect.move((-x_tr + grip_w, y_tr)).center
+                self.primary.rect.center = self.rect.move((-x_tr + grip_w, y_tr)).center
 
             else:
-                self.primary.rect.topleft = self.rect.move((x_tr - grip_w, y_tr)).center
+                self.primary.rect.center = self.rect.move((x_tr - grip_w, y_tr)).center
 
             self.primary.draw(screen)
 
@@ -273,7 +292,7 @@ class LocalPlayer(Player):
     """
 
     def __init__(self, name, controls):
-        Player.__init__(self, name, (500, 900))
+        Player.__init__(self, name, (50, 50))
         self.controls = controls
 
     def update(self):

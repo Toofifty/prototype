@@ -7,6 +7,7 @@ class AngelBoots(BasicPerk):
     def __init__(self):
         BasicPerk.__init__(self, "angel boots", "+1 jump")
         self.set_icon("angel_boots", (0, 0, 16, 16))
+        self.set_max_amount(4)
         self.visible = False
 
     def post_jump(self, player):
